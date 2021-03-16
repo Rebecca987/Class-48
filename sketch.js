@@ -6,6 +6,9 @@ var gameState = PLAY;
 var girl,girlImg;
 var ground, invisibleGround;
 var sweetsGroup, sweets2Group, sweets3Group, sweet1, sweet2, sweet3;
+var vegetableGroup, vegetable;
+var score;
+
 var score;
 
 function preload(){
@@ -16,6 +19,8 @@ function preload(){
   sweet1Img = loadImage("Images/Sweet(1).png");
   sweet2Img = loadImage("Images/Sweet(2).png");
   sweet3Img = loadImage("Images/Sweet(3).png");
+
+  vegetableImg = loadImage("Images/Broccoli.png");
 }
 
 function setup() {
@@ -36,6 +41,8 @@ function setup() {
   sweetsGroup = createGroup();
   sweets2Group = createGroup();
   sweets3Group = createGroup();
+
+  vegetableGroup = createGroup();
   
   girl.setCollider("rectangle",10, 120, 400, 100, 00);
   girl.debug = true
@@ -50,7 +57,6 @@ function draw() {
   fill("hotpink");
   textSize(30);
   text("Candy collected!🍭: "+ score, 830,100);
-  
   
   if(gameState === PLAY){
     
@@ -79,10 +85,16 @@ function draw() {
     sweets3Group.destroyEach();
     score++;
   }
+
+  if(vegetableGroup.isTouching(girl)){
+    vegetableGroup.destroyEach();
+    score--;
+  }
   
     spawnSweets();
     spawnSweets2();
     spawnSweets3();
+    spawnVegetable();
  
    girl.collide(invisibleGround);
   
@@ -90,6 +102,9 @@ function draw() {
 
 
   drawSprites();
+  fill("darkgreen");
+  textSize(30);
+  text("Avoid the vegetables🥦",820,150);
 }
 
 function spawnSweets(){
@@ -97,6 +112,7 @@ function spawnSweets(){
     sweet1 = createSprite(600,500,20,20);
     sweet1.scale = 0.5;
     sweet1.addImage("sweet",sweet1Img);
+    sweet1.y = Math.round(random(500,400));
     sweet1.velocityX = -5;
     sweet1.setLifetime = 50;
     
@@ -108,6 +124,7 @@ function spawnSweets2(){
     sweet2 = createSprite(600,500,20,20);
     sweet2.scale = 0.5;
     sweet2.addImage("sweet",sweet2Img);
+    sweet2.y = Math.round(random(500,400));
     sweet2.velocityX = -5;
     sweet2.setLifetime = 50;
     
@@ -119,10 +136,22 @@ function spawnSweets3(){
     sweet3 = createSprite(600,500,20,20);
     sweet3.scale = 0.5;
     sweet3.addImage("sweet",sweet3Img);
+    sweet3.y = Math.round(random(500,400));
     sweet3.velocityX = -5;
     sweet3.setLifetime = 50;
     
     sweets3Group.add(sweet3);
+  }
+}
+function spawnVegetable(){
+  if(World.frameCount%200 === 0){
+    vegetable = createSprite(600,500,20,20);
+    vegetable.scale = 0.1;
+    vegetable.addImage("broccoli",vegetableImg);
+    vegetable.velocityX = -5;
+    vegetable.setLifetime = 50;
+    
+    vegetableGroup.add(vegetable);
   }
 }
 }
