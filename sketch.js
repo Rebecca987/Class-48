@@ -9,10 +9,9 @@ var sweetsGroup, sweets2Group, sweets3Group, sweet1, sweet2, sweet3;
 var vegetableGroup, vegetable;
 var score;
 
-var score;
 
 function preload(){
-  backgroudImg = loadImage("Images/Candyland.jpg")
+  groundImg = loadImage("Images/Candyland.jpg")
 
   girlImg = loadImage("Images/Girl.png");
   
@@ -24,19 +23,21 @@ function preload(){
 }
 
 function setup() {
-  createCanvas(1200,625);
+  createCanvas(750,625);
+
+  ground = createSprite(100,300,600,10);
+  ground.addImage("ground",groundImg);
+  ground.x = ground.width/2;
+  ground.velocityX = -4; 
   
   girl = createSprite(150,displayHeight-350,20,50);
   girl.addImage("girl", girlImg);
-
   girl.scale = 0.5;
-  
-  ground = createSprite(200,displayHeight-350,400,20);
-  ground.x = ground.width /2;
-  ground.visible = false;
 
-  invisibleGround = createSprite(200,displayHeight-220,400,10);
-  invisibleGround.visible = false;
+  invisibleGround = createSprite(200,displayHeight-220,1225,10);
+  invisibleGround.velocityX = -4;
+  invisibleGround.x=invisibleGround.width/2;
+  invisibleGround.visible = true;
   
   sweetsGroup = createGroup();
   sweets2Group = createGroup();
@@ -53,22 +54,18 @@ function setup() {
 
 function draw() {
   
-  background(backgroudImg);
-  fill("hotpink");
-  textSize(30);
-  text("Candy collected!🍭: "+ score, 830,100);
-  
-  if(gameState === PLAY){
+  background(220);
+
+  if (invisibleGround.x<0){
+    invisibleGround.x=invisibleGround.width/2;
+  }
+
+  if (ground.x<300){
+    ground.x = ground.width/2;
+  }
+
+
     
-    if (ground.x < 0){
-      ground.x = ground.width/2;
-    }
-    
-    if(keyDown("space")&& girl.y >= 159) {
-        girl.velocityY = -12;
-    }
-    
-    girl.velocityY = girl.velocityY + 0.8
 
 
   if(sweetsGroup.isTouching(girl)){
@@ -87,16 +84,36 @@ function draw() {
   }
 
   if(vegetableGroup.isTouching(girl)){
+    girl.scale=0.1;
     vegetableGroup.destroyEach();
-    score--;
+    score=score-2;
   }
-  
+
+
+  switch(score){
+    case 4: girl.scale=0.2;
+      break;
+    case 8: girl.scale=0.3;
+      break;
+    case 12: girl.scale=0.4;
+      break;
+    case 16: girl.scale=0.5;
+      break;
+      default: break;
+  }
+
+  if(keyDown("space")&& girl.y >= 159) {
+    girl.velocityY = -12;
+}
+girl.velocityY = girl.velocityY + 0.8;
+
+girl.collide(invisibleGround);
+
     spawnSweets();
     spawnSweets2();
     spawnSweets3();
     spawnVegetable();
  
-   girl.collide(invisibleGround);
   
   
 
@@ -104,17 +121,22 @@ function draw() {
   drawSprites();
   fill("darkgreen");
   textSize(30);
-  text("Avoid the vegetables🥦",820,150);
+  text("Avoid the vegetables🥦",30,120);
+
+  fill("hotpink");
+  textSize(30);
+  text("Candy collected!🍭: "+ score, 30,80);
 }
 
 function spawnSweets(){
   if(World.frameCount%100 === 0){
     sweet1 = createSprite(600,500,20,20);
-    sweet1.scale = 0.5;
+    sweet1.scale = 0.4;
     sweet1.addImage("sweet",sweet1Img);
-    sweet1.y = Math.round(random(500,400));
+    sweet1.x = Math.round(random(900,1100));
+    sweet1.y = Math.round(random(400,500));
     sweet1.velocityX = -5;
-    sweet1.setLifetime = 50;
+    sweet1.setLifetime = 400;
     
     sweetsGroup.add(sweet1);
   }
@@ -122,11 +144,12 @@ function spawnSweets(){
 function spawnSweets2(){
   if(World.frameCount%220 === 0){
     sweet2 = createSprite(600,500,20,20);
-    sweet2.scale = 0.5;
+    sweet2.scale = 0.4;
     sweet2.addImage("sweet",sweet2Img);
-    sweet2.y = Math.round(random(500,400));
+    sweet2.x = Math.round(random(900,1100));
+    sweet2.y = Math.round(random(200,500));
     sweet2.velocityX = -5;
-    sweet2.setLifetime = 50;
+    sweet2.setLifetime = 400;
     
     sweets2Group.add(sweet2);
   }
@@ -134,11 +157,12 @@ function spawnSweets2(){
 function spawnSweets3(){
   if(World.frameCount%300 === 0){
     sweet3 = createSprite(600,500,20,20);
-    sweet3.scale = 0.5;
+    sweet3.scale = 0.4;
     sweet3.addImage("sweet",sweet3Img);
-    sweet3.y = Math.round(random(500,400));
+    sweet3.x = Math.round(random(900,1100));
+    sweet3.y = Math.round(random(200,500));
     sweet3.velocityX = -5;
-    sweet3.setLifetime = 50;
+    sweet3.setLifetime = 400;
     
     sweets3Group.add(sweet3);
   }
@@ -148,10 +172,25 @@ function spawnVegetable(){
     vegetable = createSprite(600,500,20,20);
     vegetable.scale = 0.1;
     vegetable.addImage("broccoli",vegetableImg);
+    vegetable.y = Math.round(random(400,500));
+    vegetable.x = Math.round(random(900,1100));
+
     vegetable.velocityX = -5;
-    vegetable.setLifetime = 50;
-    
+    vegetable.setLifetime = 400;
+
     vegetableGroup.add(vegetable);
   }
 }
+function reset(){
+  gameState = PLAY;
+  
+  sweetsGroup.destroyEach();
+  sweets2Group.destroyEach();
+  sweets3Group.destroyEach();
+  vegetableGroup.destroyEach();
+  
+  score = 0;
+  
 }
+
+
